@@ -7,27 +7,33 @@ const path = require('path');
 const Usuario = require('../models/usuario');
 const Producto = require('../models/producto');
 
+const uploadTempDir = path.resolve(__dirname, '../../tmp');
 
-app.use(fileUpload({ useTempFiles: true }));
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: uploadTempDir,
+    limits: { fileSize: 10 * 1024 * 1024 },
+    abortOnLimit: true
+}));
 
 app.put('/upload/:tipo/:id', function(req, res) {
     let tipo = req.params.tipo;
     let id = req.params.id;
 
-    if (!req.files) {
+    if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
         return res.status(400)
             .json({
                 ok: false,
                 err: {
-                    message: 'No se ha subido ningún archivo.'
+                    message: 'No se ha subido ningun archivo.'
                 }
-            })
+            });
     }
 
     //Validar tipo
     let tiposValidos = ['productos', 'usuarios'];
 
-    if (tiposValidos.indexOf(tipo) < 0) {
+    if (!tiposValidos.includes(tipo)) {
         return res.status(400).json({
             ok: false,
             err: {
@@ -40,12 +46,12 @@ app.put('/upload/:tipo/:id', function(req, res) {
 
     let archivo = req.files.archivo;
     let nombreCortado = archivo.name.split('.');
-    let extension = nombreCortado[nombreCortado.length - 1];
+    let extension = nombreCortado[nombreCortado.length - 1].toLowerCase();
 
     // Extensiones permitidas
 
     let extensionesValidas = ['png', 'jpg', 'gif', 'jpeg'];
-    if (extensionesValidas.indexOf(extension) < 0) {
+    if (!extensionesValidas.includes(extension)) {
         return res.status(400).json({
             ok: false,
             err: {
@@ -55,7 +61,7 @@ app.put('/upload/:tipo/:id', function(req, res) {
         });
     }
     //Cambiar nombre al archivo
-    let nombreArchivo = `${id}-${new Date().getMilliseconds()}.${extension}`;
+    let nombreArchivo = `${id}-${Date.now()}.${extension}`;
 
     archivo.mv(`uploads/${tipo}/${nombreArchivo}`, (err) => {
         if (err)

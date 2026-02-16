@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
+const JWT_SIGN_OPTIONS = { expiresIn: process.env.CADUCIDAD_TOKEN, algorithm: 'HS256' };
 
 
 const Usuario = require('../models/usuario');
@@ -48,7 +49,7 @@ app.post('/login', (req, res) => {
 
         let token = jwt.sign({
             usuario: usuarioDB
-        }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
+        }, process.env.SEED, JWT_SIGN_OPTIONS);
 
         res.json({
             ok: true,
@@ -116,7 +117,7 @@ app.post('/google', async(req, res) => {
             } else {
                 let token = jwt.sign({
                     usuario: usuarioDB
-                }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
+                }, process.env.SEED, JWT_SIGN_OPTIONS);
 
 
                 return res.json({
@@ -148,7 +149,7 @@ app.post('/google', async(req, res) => {
 
                 let token = jwt.sign({
                     usuario: usuarioDB
-                }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
+                }, process.env.SEED, JWT_SIGN_OPTIONS);
 
 
                 return res.json({

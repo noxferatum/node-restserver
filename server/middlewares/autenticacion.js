@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 
 
+const verifyOptions = { algorithms: ['HS256'] };
+
 // =====================
 // Verificar Token
 // =====================
@@ -8,7 +10,7 @@ let verificaToken = (req, res, next) => {
 
     let token = req.get('token');
 
-    jwt.verify(token, process.env.SEED, (err, decoded) => {
+    jwt.verify(token, process.env.SEED, verifyOptions, (err, decoded) => {
 
         if (err) {
             return res.status(401).json({
@@ -53,7 +55,7 @@ let verificaAdmin_Role = (req, res, next) => {
 // =====================
 let verificaTokenImg = (req, res, next) => {
     let token = req.query.token;
-    jwt.verify(token, process.env.SEED, (err, decoded) => {
+    jwt.verify(token, process.env.SEED, verifyOptions, (err, decoded) => {
 
         if (err) {
             return res.status(401).json({

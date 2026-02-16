@@ -1,2 +1,5 @@
 node_modules/
 uploads/
+tmp/
+node-bin/
+node-v20.11.1-win-x64.zip
